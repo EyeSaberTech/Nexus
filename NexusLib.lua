@@ -229,7 +229,6 @@ function Library:Notify(options)
     card.Size = UDim2.new(1, 0, 0, 70)
     card.BackgroundColor3 = Library.Theme.SecondaryBG
     card.BorderSizePixel = 0
-    card.ClipsDescendants = true
     card.Parent = NotifHolder
 
     local corner = Instance.new("UICorner")
@@ -339,7 +338,6 @@ function Library:CreateWindow(options)
     Main.Position = UDim2.new(0.5, 0, 0.5, 0)
     Main.BackgroundColor3 = T.Background
     Main.BorderSizePixel = 0
-    Main.ClipsDescendants = true
     Main.Parent = ScreenGui
 
     local mainCorner = Instance.new("UICorner")
@@ -355,10 +353,14 @@ function Library:CreateWindow(options)
 
     local Sidebar = Instance.new("Frame")
     Sidebar.Name = "Sidebar"
-    Sidebar.Size = UDim2.new(0, 148, 1, 0)
+    Sidebar.Size = UDim2.new(0, 158, 1, 0)
+    Sidebar.Position = UDim2.new(0, -10, 0, 0)
     Sidebar.BackgroundColor3 = T.SecondaryBG
     Sidebar.BorderSizePixel = 0
     Sidebar.Parent = Main
+    local sidebarCorner = Instance.new("UICorner")
+    sidebarCorner.CornerRadius = UDim.new(0, 10)
+    sidebarCorner.Parent = Sidebar
 
     local LogoArea = Instance.new("Frame")
     LogoArea.Size = UDim2.new(1, 0, 0, 60)
@@ -413,7 +415,6 @@ function Library:CreateWindow(options)
     ContentArea.Position = UDim2.new(0, 148, 0, 0)
     ContentArea.BackgroundTransparency = 1
     ContentArea.BorderSizePixel = 0
-    ContentArea.ClipsDescendants = true
     ContentArea.Parent = Main
 
     local ContentHeader = Instance.new("Frame")
@@ -986,14 +987,13 @@ function Library:CreateWindow(options)
             chevron.Parent = header
 
             local listFrame = Instance.new("Frame")
-            listFrame.Size = UDim2.new(1, 0, 0, 0)
-            listFrame.Position = UDim2.new(0, 0, 1, 4)
+            listFrame.Size = UDim2.new(0, 0, 0, 0)
             listFrame.BackgroundColor3 = T.TertiaryBG
             listFrame.BorderSizePixel = 0
             listFrame.ClipsDescendants = true
-            listFrame.ZIndex = 10
+            listFrame.ZIndex = 20
             listFrame.Visible = false
-            listFrame.Parent = container
+            listFrame.Parent = ContentArea
 
             local lc = Instance.new("UICorner") lc.CornerRadius = UDim.new(0, 6) lc.Parent = listFrame
             Util.Stroke(listFrame, T.Border)
@@ -1005,6 +1005,14 @@ function Library:CreateWindow(options)
 
             local itemHeight = 28
             local totalHeight = #opts * (itemHeight + 2) + 8
+
+            local function PositionList()
+                local absPos  = container.AbsolutePosition
+                local absSize = container.AbsoluteSize
+                local caPos   = ContentArea.AbsolutePosition
+                listFrame.Position = UDim2.new(0, absPos.X - caPos.X, 0, absPos.Y - caPos.Y + absSize.Y + 4)
+                listFrame.Size = UDim2.new(0, absSize.X, 0, 0)
+            end
 
             local function UpdateSelectedLabel()
                 if multi then
@@ -1075,7 +1083,7 @@ function Library:CreateWindow(options)
                         pcall(callback, selected)
 
                         open = false
-                        Util.TweenPlay(listFrame, { Size = UDim2.new(1, 0, 0, 0) }, 0.2)
+                        Util.TweenPlay(listFrame, { Size = UDim2.new(0, container.AbsoluteSize.X, 0, 0) }, 0.2)
                         Util.TweenPlay(chevron, { Rotation = 0 }, 0.2)
                         task.delay(0.2, function() listFrame.Visible = false end)
                     end
@@ -1091,12 +1099,13 @@ function Library:CreateWindow(options)
 
             header.MouseButton1Click:Connect(function()
                 open = not open
-                listFrame.Visible = true
                 if open then
-                    Util.TweenPlay(listFrame, { Size = UDim2.new(1, 0, 0, totalHeight) }, 0.25, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
+                    PositionList()
+                    listFrame.Visible = true
+                    Util.TweenPlay(listFrame, { Size = UDim2.new(0, container.AbsoluteSize.X, 0, totalHeight) }, 0.25, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
                     Util.TweenPlay(chevron, { Rotation = 180 }, 0.2)
                 else
-                    Util.TweenPlay(listFrame, { Size = UDim2.new(1, 0, 0, 0) }, 0.2)
+                    Util.TweenPlay(listFrame, { Size = UDim2.new(0, container.AbsoluteSize.X, 0, 0) }, 0.2)
                     Util.TweenPlay(chevron, { Rotation = 0 }, 0.2)
                     task.delay(0.2, function() listFrame.Visible = false end)
                 end

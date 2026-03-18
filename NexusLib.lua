@@ -500,10 +500,16 @@ function Library:CreateWindow(options)
         minimised = not minimised
         if minimised then
             Main.ClipsDescendants = true
+            Sidebar.Visible = false
+            ContentArea.Visible = false
             Util.TweenPlay(Main, { Size = miniSize }, 0.25, Enum.EasingStyle.Quart)
         else
             Util.TweenPlay(Main, { Size = normalSize }, 0.3, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
-            task.delay(0.3, function() Main.ClipsDescendants = false end)
+            task.delay(0.3, function()
+                Main.ClipsDescendants = false
+                Sidebar.Visible = true
+                ContentArea.Visible = true
+            end)
         end
     end)
 

@@ -491,6 +491,7 @@ function Library:CreateWindow(options)
 
     CloseBtn.MouseButton1Click:Connect(function()
         visible = false
+        Main.ClipsDescendants = true
         Util.TweenPlay(Main, { Size = UDim2.new(0, size.X, 0, 0) }, 0.3, Enum.EasingStyle.Back, Enum.EasingDirection.In)
         task.delay(0.32, function() ScreenGui.Enabled = false end)
     end)
@@ -498,9 +499,11 @@ function Library:CreateWindow(options)
     MinBtn.MouseButton1Click:Connect(function()
         minimised = not minimised
         if minimised then
+            Main.ClipsDescendants = true
             Util.TweenPlay(Main, { Size = miniSize }, 0.25, Enum.EasingStyle.Quart)
         else
             Util.TweenPlay(Main, { Size = normalSize }, 0.3, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
+            task.delay(0.3, function() Main.ClipsDescendants = false end)
         end
     end)
 
@@ -509,16 +512,20 @@ function Library:CreateWindow(options)
             visible = not visible
             ScreenGui.Enabled = visible
             if visible then
+                Main.ClipsDescendants = true
                 Main.Size = UDim2.new(0, size.X, 0, 0)
                 Util.TweenPlay(Main, { Size = normalSize }, 0.35, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
+                task.delay(0.35, function() Main.ClipsDescendants = false end)
             end
         end
     end)
 
     Main.Size = UDim2.new(0, size.X, 0, 0)
     Main.BackgroundTransparency = 0.5
+    Main.ClipsDescendants = true
     task.defer(function()
         Util.TweenPlay(Main, { Size = normalSize, BackgroundTransparency = 0 }, 0.45, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
+        task.delay(0.45, function() Main.ClipsDescendants = false end)
     end)
 
     local Window = {}
